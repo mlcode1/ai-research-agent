@@ -44,11 +44,11 @@ def main():
     # 主题输入
     topic = st.text_input(
         "研究主题",
-        placeholder="例：AI Agent 在 2026 年的最新发展趋势",
+        placeholder=f"例：AI Agent 在 {datetime.now().year} 年的最新发展趋势",
     )
 
     examples = [
-        "AI Agent 在 2026 年的最新发展趋势",
+        f"AI Agent 在 {datetime.now().year} 年的最新发展趋势",
         "DeepSeek 对中国 AI 行业的影响",
         "开源 vs 闭源大模型的商业化对比",
     ]
