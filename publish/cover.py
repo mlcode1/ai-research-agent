@@ -203,7 +203,7 @@ def _pillow_fallback(topic, prompt, output_path, api_key, base_url, model, style
     soft_white = _blend_color((255, 255, 255), (accent_r, accent_g, accent_b), alpha=0.63)
     dim_white = _blend_color((255, 255, 255), (accent_r, accent_g, accent_b), alpha=0.39)
 
-    draw.text((50, 50), "研究报告", fill=mid_accent, font=label_font)
+    draw.text((50, 50), "深度解读", fill=mid_accent, font=label_font)
     # 分隔线
     draw.rectangle([(50, 80), (120, 83)], fill=soft_white)
 

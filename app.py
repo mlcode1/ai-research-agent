@@ -122,6 +122,13 @@ def _run_research(topic: str, publish_to_wechat: bool = False):
         progress.progress(0.9, text="报告生成完成，保存中...")
 
         report = str(result)
+        
+        # 强制清理标题前缀（移除「研究报告」等字样）
+        from publish.publisher import clean_article_title
+        cleaned_report = clean_article_title(report)
+        if cleaned_report != report:
+            print("🔧 已清理标题前缀")
+            report = cleaned_report
 
         # 保存到文件
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")

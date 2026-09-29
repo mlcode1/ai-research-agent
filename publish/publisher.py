@@ -22,6 +22,36 @@ from publish.cover import generate_cover
 from publish.converter import md_to_wechat_html, extract_title, extract_digest, find_images
 
 
+def clean_article_title(md_text: str) -> str:
+    """清理文章标题，移除「研究报告」「分析报告」等前缀
+    
+    Args:
+        md_text: Markdown 文本
+        
+    Returns:
+        清理后的 Markdown 文本
+    """
+    import re
+    
+    # 匹配第一行的 # 标题
+    lines = md_text.split('\n')
+    if lines and lines[0].startswith('# '):
+        title = lines[0][2:].strip()  # 去掉 "# "
+        
+        # 移除常见前缀
+        prefixes = ['研究报告', '分析报告', '深度分析', '研究报告：', '分析报告：', '深度分析：']
+        for prefix in prefixes:
+            if title.startswith(prefix):
+                title = title[len(prefix):].strip()
+                # 移除可能的前导符号
+                title = title.lstrip('-：: ').strip()
+                break
+        
+        lines[0] = f'# {title}'
+    
+    return '\n'.join(lines)
+
+
 def publish_report(
     md_path: str | Path,
     topic: str = "",
@@ -55,6 +85,14 @@ def publish_report(
         return {"success": False, "error": "未配置 WECHAT_APP_ID 或 WECHAT_APP_SECRET"}
 
     md_text = md_path.read_text(encoding="utf-8")
+    
+    # 强制清理标题前缀（移除「研究报告」等字样）
+    cleaned_text = clean_article_title(md_text)
+    if cleaned_text != md_text:
+        md_path.write_text(cleaned_text, encoding="utf-8")
+        md_text = cleaned_text
+        print("   🔧 已清理标题前缀")
+    
     title = extract_title(md_text, fallback=topic or md_path.stem)
     digest = extract_digest(md_text)
     topic_for_cover = topic or title

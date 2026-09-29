@@ -77,6 +77,14 @@ def main():
     filepath = OUTPUT_DIR / filename
 
     report = str(result)
+    
+    # 强制清理标题前缀（移除「研究报告」等字样）
+    from publish.publisher import clean_article_title
+    cleaned_report = clean_article_title(report)
+    if cleaned_report != report:
+        print("🔧 已清理标题前缀")
+        report = cleaned_report
+    
     filepath.write_text(report, encoding="utf-8")
 
     print("\n" + "=" * 60)
