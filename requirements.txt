@@ -3,3 +3,9 @@ duckduckgo-search>=6.2.0
 tavily-python>=0.5.0
 python-dotenv>=1.0.0
 streamlit>=1.40.0
+
+# 微信公众号发布模块
+markdown>=3.5.0
+beautifulsoup4>=4.12.0
+Pillow>=10.0.0
+requests>=2.31.0
