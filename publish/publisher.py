@@ -20,6 +20,7 @@ from config import (
 from publish.weixin import WeChatAPI, WeChatAPIError
 from publish.cover import generate_cover
 from publish.converter import md_to_wechat_html, extract_title, extract_digest, find_images
+from publish.preview import generate_preview
 
 
 def clean_article_title(md_text: str) -> str:
@@ -56,6 +57,7 @@ def publish_report(
     md_path: str | Path,
     topic: str = "",
     auto_publish: bool | None = None,
+    generate_preview_file: bool = True,
 ) -> dict:
     """将报告发布到微信公众号草稿箱
 
@@ -63,6 +65,7 @@ def publish_report(
         md_path: 报告 Markdown 文件路径
         topic: 研究主题（用于封面图生成，为空则从文件标题提取）
         auto_publish: 是否发布，None 则读 WECHAT_ENABLED 配置
+        generate_preview_file: 是否生成预览文件（默认开启）
 
     Returns:
         {
@@ -70,6 +73,7 @@ def publish_report(
             "draft_media_id": str,   # 草稿 media_id
             "cover_path": str,       # 封面图本地路径
             "title": str,            # 文章标题
+            "preview_path": str,     # 预览文件路径
             "error": str | None,     # 错误信息
         }
     """
@@ -156,6 +160,23 @@ def publish_report(
     print(f"   📝 转换 Markdown → 微信 HTML...")
     wechat_html = md_to_wechat_html(md_text, image_map=image_map)
     
+    # 生成预览文件（在发送微信前）
+    preview_path = None
+    if generate_preview_file:
+        preview_dir = OUTPUT_DIR / "previews"
+        preview_dir.mkdir(exist_ok=True)
+        preview_file = preview_dir / f"{md_path.stem}-preview.html"
+        try:
+            preview_path = generate_preview(
+                title=title,
+                html_content=wechat_html,
+                output_path=preview_file
+            )
+            print(f"   👁️  预览文件已生成：{preview_path}")
+            print(f"      在浏览器中打开可预览微信公众号效果")
+        except Exception as e:
+            print(f"   ⚠️ 预览文件生成失败：{e}")
+    
     # 检查 HTML 大小（微信限制约 20000 字符）
     if len(wechat_html) > 18000:
         print(f"   ⚠️ HTML 内容过大（{len(wechat_html)} 字符），自动截断...")
@@ -179,6 +200,7 @@ def publish_report(
         "success": True,
         "draft_media_id": draft_media_id,
         "cover_path": str(cover_path),
+        "preview_path": str(preview_path) if preview_path else None,
         "title": title,
         "error": None,
     }

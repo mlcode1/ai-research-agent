@@ -146,10 +146,10 @@ def _run_research(topic: str, publish_to_wechat: bool = False):
 
                 pub_result = publish_report(filepath, topic=topic)
                 if pub_result["success"]:
-                    st.success(
-                        f"📮 微信草稿已创建！标题：{pub_result['title']}\n\n"
-                        f"请登录公众号后台查看并发布。"
-                    )
+                    success_msg = f"📮 微信草稿已创建！标题：{pub_result['title']}\n\n请登录公众号后台查看并发布。"
+                    if pub_result.get("preview_path"):
+                        success_msg += f"\n\n👁️ 预览文件：`{pub_result['preview_path']}`"
+                    st.success(success_msg)
                     # 显示封面图预览
                     cover_path = pub_result.get("cover_path", "")
                     if cover_path:

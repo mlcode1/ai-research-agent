@@ -100,6 +100,8 @@ def main():
         if pub_result["success"]:
             print(f"📮 微信草稿已创建：{pub_result['title']}")
             print(f"   封面图：{pub_result['cover_path']}")
+            if pub_result.get("preview_path"):
+                print(f"   👁️  预览文件：{pub_result['preview_path']}")
         else:
             print(f"⚠️ 微信发布失败：{pub_result['error']}")
 
